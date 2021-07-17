@@ -36,8 +36,16 @@ class nave(pygame.sprite.Sprite):
         self.vida = True
         self.velocidade = 20
 
-    #função para delimitar as bordas da tela
-    def movimento(self):
+    def movimentoDireita(self):
+        self.rect.right += self.velocidade
+        self.__movimento()
+
+    def movimentoEsquerda(self):
+        self.rect.left  -= self.velocidade
+        self.__movimento()
+
+    # função privada para delimitar as bordas da tela
+    def __movimento(self):
         if self.vida == True:
             if self.rect.left <= 0:
                 self.rect.left = 0
@@ -65,8 +73,12 @@ def jogo_nave():
 
     tiroNave = tiro(largura/2,altura - 70)
 
+    #velocidade de execução - FPS
+    relogio = pygame.time.Clock()
+
     while True:
-        jogador.movimento()
+        relogio.tick(60)
+        #jogador.movimento()
         tiroNave.trajetoria()
         #estrutura de repetição para captar os eventos do jogo
         for evento in pygame.event.get():
@@ -75,21 +87,22 @@ def jogo_nave():
                 sys.exit()
             if evento.type == pygame.KEYDOWN:
                 if evento.key == K_LEFT:
-                    jogador.rect.left -= jogador.velocidade
+                    jogador.movimentoEsquerda()
                 elif evento.key == K_RIGHT:
-                    jogador.rect.right += jogador.velocidade
+                    jogador.movimentoDireita()
                 elif evento.key == K_SPACE:
                     x,y = jogador.rect.center
                     jogador.disparar(x,y)
 
         #colocando os elementos do jogo da tela
         tela.blit(fundo,(0,0))
-        tiroNave.colocar(tela)
         jogador.colocar(tela)
         if len(jogador.listaDisparo) > 0:
             for x in jogador.listaDisparo:
                 x.colocar(tela)
                 x.trajetoria()
+                if x.rect.top < -10:
+                    jogador.listaDisparo.remove(x)
 
         #atualizando a tela
         pygame.display.update()

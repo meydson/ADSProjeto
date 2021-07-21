@@ -5,6 +5,24 @@ from pygame.locals import *
 largura = 900
 altura = 506
 
+class naveInimigo(pygame.sprite.Sprite):
+    def __init__(self, p_x, p_y):
+        pygame.sprite.Sprite.__init__(self)
+        self.ImagemInimigo = pygame.image.load('imagens/inimigo.png')
+
+        self.rect = self.ImagemInimigo.get_rect()
+
+        self.listaDisparo = []
+        self.velocidade = 20
+        self.rect.top = p_y
+        self.rect.left = p_x
+
+    def trajetoria(self):
+        self.rect.top = self.rect.top - self.velocidadeDisparo
+
+    def colocar(self, superficie):
+        superficie.blit(self.ImagemInimigo, self.rect)
+
 #criação das classes dos objetos do jogo
 class tiro(pygame.sprite.Sprite):
     def __init__(self, p_x, p_y):
@@ -71,6 +89,8 @@ def jogo_nave():
     fundo = pygame.image.load('imagens/fundo.png')
     jogando = True
 
+    inimigo = naveInimigo(100,100)
+
     tiroNave = tiro(largura/2,altura - 70)
 
     #velocidade de execução - FPS
@@ -97,6 +117,7 @@ def jogo_nave():
         #colocando os elementos do jogo da tela
         tela.blit(fundo,(0,0))
         jogador.colocar(tela)
+        inimigo.colocar(tela)
         if len(jogador.listaDisparo) > 0:
             for x in jogador.listaDisparo:
                 x.colocar(tela)
